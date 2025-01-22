@@ -14,4 +14,17 @@ const router = createRouter({
   routes,
 })
 
+// Navigation guard to check for username and password in sessionStorage
+router.beforeEach((to, from, next) => {
+  const username = sessionStorage.getItem('username')
+  const password = sessionStorage.getItem('password')
+
+  if (!username || !password) {
+    if (to.path !== '/login') {
+      return next('/login')
+    }
+  }
+  next()
+})
+
 export default router

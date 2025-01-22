@@ -1,5 +1,5 @@
 <script setup>
-import { GoogleMap, AdvancedMarker } from 'vue3-google-map'
+import { GoogleMap, AdvancedMarker, InfoWindow } from 'vue3-google-map'
 import { defineProps } from 'vue'
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -26,6 +26,10 @@ const props = defineProps({
     :zoom="15"
     mapId="DEMO_MAP_ID"
   >
-    <AdvancedMarker v-for="(marker, index) in props.markers" :key="index" :options="{ position: marker }" />
+    <AdvancedMarker v-for="(marker, index) in props.markers" :key="index" :options="{ position: marker, title: `Property id: ${marker.id}` }">
+      <InfoWindow>
+        <span style="color: black">Property id: {{ marker.id }}</span>
+      </InfoWindow>
+      </AdvancedMarker>
   </GoogleMap>
 </template>

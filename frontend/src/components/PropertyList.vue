@@ -55,7 +55,7 @@ export default {
           offset: 0
         })
         properties.value = response
-        markers.value = response.map(prop => ({ lat: prop.latitude, lng: prop.longitude }))
+        markers.value = response.map(prop => ({ lat: prop.latitude, lng: prop.longitude, id: prop.id }))
       } catch (error) {
         console.error('Error fetching properties:', error)
       }

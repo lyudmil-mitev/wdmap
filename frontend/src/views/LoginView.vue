@@ -11,6 +11,7 @@
         <input type="password" id="password" v-model="password" required />
       </div>
       <button type="submit">Login</button>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </form>
   </div>
 </template>
@@ -20,16 +21,34 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
-    };
+      password: '',
+      errorMessage: ''
+    }
   },
   methods: {
-    login() {
-      // Handle login logic here
-      console.log('Logging in with', this.username, this.password);
+    async login() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/login', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + btoa(`${this.username}:${this.password}`),
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Invalid username or password');
+        }
+
+        sessionStorage.setItem('username', this.username);
+        sessionStorage.setItem('password', this.password);
+        this.$router.push('/');
+      } catch (error) {
+        this.errorMessage = error.message;
+      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -68,5 +87,9 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+.error {
+  color: red;
 }
 </style>
