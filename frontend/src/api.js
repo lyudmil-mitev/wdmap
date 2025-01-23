@@ -19,6 +19,10 @@ const apiClient = {
 
     return response.json()
   },
+
+  async getAll() {
+    return this.get('/all_properties/')
+  }
 }
 
 export default apiClient

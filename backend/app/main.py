@@ -18,6 +18,7 @@ app.add_middleware(
 
 security = HTTPBasic()
 
+
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "admin")
     correct_password = secrets.compare_digest(credentials.password, "admin")
@@ -28,13 +29,16 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
             headers={"WWW-Authenticate": "Basic"},
         )
 
+
 @app.post("/login")
 def login(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     return {"message": "Login successful"}
 
+
 @app.get("/")
 def root(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     return {"message": "Welcome to the Property API"}
+
 
 @app.get("/properties")
 def list_properties(
@@ -44,56 +48,63 @@ def list_properties(
     offset: int = 0,
     full_address: str = Query(None),
     class_description: str = Query(None),
-    min_market_value: float = Query(None),
-    max_market_value: float = Query(None)
+    estimated_market_value: str = Query(None, regex=r"^\d+,\d+$"),
+    building_sq_ft: str = Query(None, regex=r"^\d+,\d+$"),
+    bldg_use: str = Query(None),
 ):
     query = db.query(Property)
-    
+
     print(f"full_address: {full_address}, limit: {limit}, offset: {offset}")
     if full_address:
         query = query.filter(Property.full_address.contains(full_address))
+
     if class_description:
         query = query.filter(Property.class_description.contains(class_description))
-    if min_market_value is not None:
-        query = query.filter(Property.estimated_market_value >= min_market_value)
-    if max_market_value is not None:
-        query = query.filter(Property.estimated_market_value <= max_market_value)
+
+    if estimated_market_value:
+        print(f"estimated_market_value: {estimated_market_value}")
+        low, high = estimated_market_value.split(",")
+        query = query.filter(Property.estimated_market_value >= low)
+        query = query.filter(Property.estimated_market_value <= high)
+
+    if building_sq_ft:
+        print(f"building_sq_ft: {building_sq_ft}")
+        low, high = building_sq_ft.split(",")
+        query = query.filter(Property.building_sq_ft >= low)
+        query = query.filter(Property.building_sq_ft <= high)
+
+    if bldg_use:
+        for use in bldg_use.split(","):
+            query = query.filter(Property.bldg_use.contains(use))
 
     # Pagination
     query = query.offset(offset).limit(limit)
 
     return query.all()
 
+
 @app.get("/properties/{property_id}")
 def get_property_by_id(
     property_id: int,
     db: Session = Depends(get_db),
     credentials: HTTPBasicCredentials = Depends(verify_credentials),
-    ):
-    """
-    Retrieve a single property by its database ID.
-    """
+):
     prop = db.query(Property).filter(Property.id == property_id).first()
     if not prop:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Property with ID {property_id} not found."
+            detail=f"Property with ID {property_id} not found.",
         )
     return prop
 
-@app.get("/property/{property_id}")
-def get_property(
-    property_id: int,
+
+@app.get("/all_properties")
+def list_property_coordinates(
     db: Session = Depends(get_db),
-    credentials: HTTPBasicCredentials = Depends(security),
+    credentials: HTTPBasicCredentials = Depends(verify_credentials),
 ):
-    """
-    Retrieve a single property by its database ID.
-    """
-    prop = db.query(Property).filter(Property.id == property_id).first()
-    if not prop:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Property with ID {property_id} not found."
-        )
-    return prop
+    properties = db.query(Property.id, Property.latitude, Property.longitude).all()
+    return [
+        {"id": prop.id, "latitude": prop.latitude, "longitude": prop.longitude}
+        for prop in properties
+    ]
