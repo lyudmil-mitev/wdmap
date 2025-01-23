@@ -20,6 +20,7 @@ security = HTTPBasic()
 
 
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    # TODO: Set the hardcoded username and password in .env instead
     correct_username = secrets.compare_digest(credentials.username, "admin")
     correct_password = secrets.compare_digest(credentials.password, "admin")
     if not (correct_username and correct_password):
@@ -48,8 +49,8 @@ def list_properties(
     offset: int = 0,
     full_address: str = Query(None),
     class_description: str = Query(None),
-    estimated_market_value: str = Query(None, regex=r"^\d+,\d+$"),
-    building_sq_ft: str = Query(None, regex=r"^\d+,\d+$"),
+    estimated_market_value: str = Query(None, pattern=r"^\d+,\d+$"),
+    building_sq_ft: str = Query(None, pattern=r"^\d+,\d+$"),
     bldg_use: str = Query(None),
 ):
     query = db.query(Property)
