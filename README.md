@@ -22,6 +22,8 @@ NOTE: Please provide your own Google Maps Api key in the ./frontend/.env file:
 1. Make sure you have docker and docker-compose installed
 2. Create the file `frontend/.env` and set your Google Maps Api key in the variable `VITE_GOOGLE_MAPS_API_KEY`
 3. Execute `run.sh`
+4. Access the frontend at [http://localhost:8080/](http://localhost:8080/)
+5. Access the backend at [http://localhost:8000/](http://localhost:8000/)
 
 ### Additional features
 1. Implemented marker clustering in Google Maps, because the properties are often grouped very close together
