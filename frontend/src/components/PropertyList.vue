@@ -1,69 +1,41 @@
 <template>
   <div>
+    <CollapsibleSection title="Filters">
+      <FilterForm :endpoint="fetchProperties"></FilterForm>
+    </CollapsibleSection>
 
-    <div class="filters">
-    <h3>Filters</h3>
-    <Vueform :endpoint="fetchProperties">
-      <TextElement name="searchClass"
-        description="Filter by property class" placeholder="Class" :columns="{
-          container: 4,
-        }" />
-      <TextElement name="searchAddress"
-        description="Filter by address content" placeholder="Address" :columns="{
-          container: 4,
-        }" />
-      <CheckboxgroupElement name="buildingUse" :items="[
-        'Single Family',
-        'Multi Family',
-      ]" description="Building Use" :columns="{
-        container: 4,
-      }" />
-      <StaticElement name="divider_1" tag="hr" />
-      <SliderElement name="resultsLimit" :default="30" description="Number of Results per page" />
-      <StaticElement name="divider" tag="hr" />
-      <SliderElement name="marketValueRange" :default="[
-        300000,
-        2000000,
-      ]" :min="100000" :max="3000000" :format="{ prefix: '$', thousand: ',', }" description="Estimated Market Value" :columns="{
-        container: 6,
-      }" />
-      <SliderElement name="squareFeetRange" :default="[
-        1000,
-        5000,
-      ]"  :min="0" :max="20000" :format="{ thousand: ',', suffux: 'ft2' }" description="Building Ft2" :columns="{
-        container: 6,
-      }" />
-      <ButtonElement name="submit" button-label="Apply Filter" align="center" :submits="true"/>
-    </Vueform>
-    </div>
+    <CollapsibleSection title="Map">
+      <PropertyMap v-if="markers.length" :markers="markers" :center="center" />
+    </CollapsibleSection>
 
-    <PropertyMap v-if="markers.length" :markers="markers" :center="center" />
-
-    <table v-if="properties.length" class="property-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Full Address</th>
-          <th>Class</th>
-          <th>Building use</th>
-          <th>Building ft<sup>2</sup></th>
-          <th>Market Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(prop, index) in properties" :key="prop.id"
-          :class="{ 'odd-row': index % 2 === 0, 'even-row': index % 2 !== 0 }">
+    <CollapsibleSection title="Property List">
+      <table v-if="properties.length" class="property-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Address</th>
+            <th>Class</th>
+            <th>Building use</th>
+            <th>Building ft<sup>2</sup></th>
+            <th>Market Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(prop, index) in properties" :key="prop.id"
+            :class="{ 'odd-row': index % 2 === 0, 'even-row': index % 2 !== 0 }">
             <td>{{ prop.id }}</td>
-            <td><strong><router-link :to="{ name: 'PropertyDetails', params: { id: prop.id } }" tag="tr">{{ prop.full_address }}</router-link></strong></td>
+            <td><strong><router-link :to="{ name: 'PropertyDetails', params: { id: prop.id } }" tag="tr">{{
+              prop.full_address }}</router-link></strong></td>
             <td>{{ prop.class_description }}</td>
             <td>{{ prop.bldg_use }}</td>
             <td>{{ formatSquareFeet(prop.building_sq_ft) }}</td>
             <td>{{ formatUSD(prop.estimated_market_value) }}</td>
-        </tr>
-      </tbody>
-    </table>
+          </tr>
+        </tbody>
+      </table>
 
-    <h3 v-else>No properties found</h3>
+      <h3 v-else>No properties found</h3>
+    </CollapsibleSection>
   </div>
 </template>
 
@@ -72,10 +44,14 @@ import { onMounted, computed, ref } from 'vue'
 import apiClient from '../api'
 import PropertyMap from './PropertyMap.vue';
 import { formatSquareFeet, formatUSD } from '../utils';
+import FilterForm from './FilterForm.vue';
+import CollapsibleSection from './CollapsibleSection.vue';
 
 export default {
   name: 'PropertyList',
   components: {
+    FilterForm,
+    CollapsibleSection,
     PropertyMap
   },
   setup() {
@@ -140,6 +116,7 @@ export default {
   border-radius: 10px;
   margin: 0 1rem 1rem 1rem;
 }
+
 .property-table {
   width: 100%;
   border-collapse: collapse;
