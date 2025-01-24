@@ -22,3 +22,15 @@ NOTE: Please provide your own Google Maps Api key in the ./frontend/.env file:
 1. Make sure you have docker and docker-compose installed
 2. Create the file `frontend/.env` and set your Google Maps Api key in the variable `VITE_GOOGLE_MAPS_API_KEY`
 3. Execute `run.sh`
+
+### Additional features
+1. Implemented marker clustering in Google Maps, because the properties are often grouped very close together
+2. Implemented a Vueform design with range sliders for a better user experience when filtering property area and market value
+3. Implemented a small pytest suite with 10 tests to validate API endpont functionality such as HTTP authentication and filter pattern validation
+4. Implemented a Property Details page that lists all property information and a Google Maps map. Navigation is done via links in the Maps marker tooltip and the Property list table 
+
+### Optimization
+1. In order to optimize the application performance when the data scales, my intuition is to use Geo database extensions to create a spatial data index
+2. This will enable us to create an endpoint that can return properties within a radius of a location, or within the Google Maps viewport. That way we can load property markers on demand
+3. We can also add a feature to the Property details view that shows properties that are nearby the currently viewed property
+4. To implement this I would use the [GeoAlchemy 2 Extension to SQLAlchemy that uses the SpatiaLite SQLite module](https://geoalchemy-2.readthedocs.io/en/0.14.3/spatialite_tutorial.html)
