@@ -1,5 +1,8 @@
 # W&D Property Browser
 
+## NOTE
+When reading the instructions for the first time I missed the requirement that the solution should be a fork. I have created a fork and merged this repository into it at: [https://github.com/lyudmil-mitev/fullstack-challenge](https://github.com/lyudmil-mitev/fullstack-challenge)
+
 ### Introduction 
 This is an implementation of the [Full-Stack Challenge](https://github.com/enodoscore/fullstack-challenge).
 I have chosen to use FastAPI, SQLite, pytest, Vue.js version 3, vue-router, Vueforms and the Google Maps API
