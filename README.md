@@ -30,6 +30,7 @@ NOTE: Please provide your own Google Maps Api key in the ./frontend/.env file:
 2. Implemented a Vueform design with range sliders for a better user experience when filtering property area and market value
 3. Implemented a small pytest suite with 10 tests to validate API endpont functionality such as HTTP authentication and filter pattern validation
 4. Implemented a Property Details page that lists all property information and a Google Maps map. Navigation is done via links in the Maps marker tooltip and the Property list table 
+5. Implemented a Collapsible component to group the page elements and improve UX on mobile
 
 ### Optimization
 1. In order to optimize the application performance when the data scales, my intuition is to use Geo database extensions to create a spatial data index
