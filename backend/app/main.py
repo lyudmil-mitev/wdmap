@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, Query, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
+from pydantic import conint
 from .database import get_db
 from .models import Property
 import secrets
@@ -45,8 +46,8 @@ def root(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
 def list_properties(
     db: Session = Depends(get_db),
     credentials: HTTPBasicCredentials = Depends(verify_credentials),
-    limit: int = 10,
-    offset: int = 0,
+    limit: conint(ge=0, le=1500) = 10, # Set maximum for limit to 1500
+    offset: conint(ge=0) = 0, # Set minimum for offset to 0
     full_address: str = Query(None),
     class_description: str = Query(None),
     estimated_market_value: str = Query(None, pattern=r"^\d+,\d+$"),
@@ -55,7 +56,6 @@ def list_properties(
 ):
     query = db.query(Property)
 
-    print(f"full_address: {full_address}, limit: {limit}, offset: {offset}")
     if full_address:
         query = query.filter(Property.full_address.contains(full_address))
 
@@ -63,13 +63,11 @@ def list_properties(
         query = query.filter(Property.class_description.contains(class_description))
 
     if estimated_market_value:
-        print(f"estimated_market_value: {estimated_market_value}")
         low, high = estimated_market_value.split(",")
         query = query.filter(Property.estimated_market_value >= low)
         query = query.filter(Property.estimated_market_value <= high)
 
     if building_sq_ft:
-        print(f"building_sq_ft: {building_sq_ft}")
         low, high = building_sq_ft.split(",")
         query = query.filter(Property.building_sq_ft >= low)
         query = query.filter(Property.building_sq_ft <= high)

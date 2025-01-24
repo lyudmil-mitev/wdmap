@@ -141,3 +141,13 @@ def test_get_property_by_id(db_session: Session):
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == 1
+
+def test_limit_validation():
+    response = client.get("/properties?limit=-1", auth=HTTPBasicAuth('admin', 'admin'))
+    assert response.status_code == 422
+    response = client.get("/properties?limit=2000", auth=HTTPBasicAuth('admin', 'admin'))
+    assert response.status_code == 422
+
+def test_offset_validation():
+    response = client.get("/properties?offset=-1", auth=HTTPBasicAuth('admin', 'admin'))
+    assert response.status_code == 422
