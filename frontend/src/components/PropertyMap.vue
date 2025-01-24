@@ -39,6 +39,11 @@ onMounted(async () => {
         :options="{ position: marker, title: `Property id: ${marker.id}` }">
         <InfoWindow>
           <span style="color: black">Property id: {{ marker.id }}</span>
+          <div style="color: black;">
+            <router-link :to="{ name: 'PropertyDetails', params: { id: marker.id } }">
+              Open detail page
+            </router-link>
+          </div>
         </InfoWindow>
       </AdvancedMarker>
     </MarkerCluster>

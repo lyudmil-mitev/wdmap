@@ -53,12 +53,12 @@
       <tbody>
         <tr v-for="(prop, index) in properties" :key="prop.id"
           :class="{ 'odd-row': index % 2 === 0, 'even-row': index % 2 !== 0 }">
-          <td>{{ prop.id }}</td>
-          <td><strong>{{ prop.full_address }}</strong></td>
-          <td>{{ prop.class_description }}</td>
-          <td>{{ prop.bldg_use }}</td>
-          <td>{{ prop.building_sq_ft }}</td>
-          <td>{{ prop.estimated_market_value }}</td>
+            <td>{{ prop.id }}</td>
+            <td><strong><router-link :to="{ name: 'PropertyDetails', params: { id: prop.id } }" tag="tr">{{ prop.full_address }}</router-link></strong></td>
+            <td>{{ prop.class_description }}</td>
+            <td>{{ prop.bldg_use }}</td>
+            <td>{{ prop.building_sq_ft }}</td>
+            <td>{{ prop.estimated_market_value }}</td>
         </tr>
       </tbody>
     </table>
@@ -71,7 +71,6 @@
 import { onMounted, computed, ref } from 'vue'
 import apiClient from '../api'
 import PropertyMap from './PropertyMap.vue';
-import { Vueform } from '@vueform/vueform/dist/vueform';
 
 export default {
   name: 'PropertyList',
